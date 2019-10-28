@@ -5,7 +5,7 @@ npm start
 
 Then load page (i.e., in Chrome browser):
 ```
-http://localhost:8125/?noautomation
+http://localhost:8125/?chrome
 ```
 
 Output of frontend and backend surface will be saved to ./dumps/ directory/.  
