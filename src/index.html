@@ -1,0 +1,102 @@
+<html>
+<head>
+  <title>Testing</title>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+  <pre id="found-keys"></pre>
+  <div id="found"></div>
+  <pre id="processed-keys"></pre>
+  <div id="processed"></div>
+  <div id="status"></div>
+</body>
+<script>
+  const CIRCULAR = 'CIRCULAR';
+  extractFromObject(window, 'window', new Map([ [window,'window'] ])).then(data => {
+    document.querySelector('#status').innerHTML = 'SENDING FRONTEND TO SERVER';
+    window.scrollTo(0,document.body.scrollHeight);
+
+    axios.post(`/frontend${window.location.search}`, data).then(function(response) {
+      document.querySelector('#status').innerHTML = 'SENT FRONTEND TO SERVER';
+      window.scrollTo(0,document.body.scrollHeight);
+    })
+    // document.write('<pre>');
+    // document.write(data)
+    // document.write('</pre>');
+  });
+
+  function extractFromObject(obj, parentPath, parentCache) {
+    let isWindow = parentPath === 'window';
+    let keys = new Set();
+    for (let key of Object.getOwnPropertyNames(obj)) {
+      if (key === 'document' || obj[key] === obj) continue;
+      keys.add(key)
+      if (isWindow) {
+        document.querySelector('#found').innerHTML = `FOUND ${keys.size}`;
+        window.scrollTo(0,document.body.scrollHeight);
+      }
+    }
+    for (let key in obj){
+      if (key === 'document' || obj[key] === obj) continue;
+      keys.add(key)
+      if (isWindow) {
+        document.querySelector('#found').innerHTML = `FOUND ${keys.size}`;
+        window.scrollTo(0,document.body.scrollHeight);
+      }
+    }
+    keys = [ ...Array.from(keys).sort() ];
+    if (isWindow) {
+      document.querySelector('#found').innerHTML = `FOUND ${keys.length} KEYS`;
+      document.querySelector('#found-keys').append(keys.map((k,i) => `${i+1}) ${parentPath}.${k}`).join('\n'))
+      window.scrollTo(0,document.body.scrollHeight);
+    }
+
+    return new Promise((resolve, reject) => {
+      setTimeout(async function() {
+        const newObj = {};
+        let i = 0;
+        for (let key of keys) {
+          i++;
+          if (isWindow) {
+            document.querySelector('#processed').innerHTML = `PROCESSED ${i} of ${keys.length}`;
+            document.querySelector('#processed-keys').append(`${i}) ${parentPath}.${key}\n`)
+            window.scrollTo(0,document.body.scrollHeight);
+          }
+          const path = `${parentPath}.${key}`;
+          const cache = new Map(parentCache.entries());
+          const value = await extractValue(obj[key], path, cache);
+          newObj[key] = value;
+        }
+        resolve(newObj);
+      });
+    })
+  }
+
+  async function extractFromArray(array, path, cache) {
+    const newArray = [];
+    for (let value of array) {
+      value = await extractValue(value, path, cache);
+      newArray.push(value)
+    };
+    return newArray;
+  }
+
+  async function extractValue(value, path, cache) {
+    if (!value) return value;
+    if (cache.get(value) === undefined) {
+      cache.set(value, path);
+    } else {
+      return `CIRCULAR VALUE TO: ${cache.get(value)}`;
+    }
+
+    if (Array.isArray(value)) {
+      return await extractFromArray(value, path, cache);
+    } else if (typeof value === 'object') {
+      return await extractFromObject(value, path, cache);
+    } else {
+      return value.toString();
+    }
+  }
+
+</script>
+</html>

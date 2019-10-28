@@ -1,0 +1,14 @@
+{
+  "name": "browserdiff",
+  "version": "1.0.0",
+  "description": "compare browser diffs",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Caleb Clark",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer": "2.0.0"
+  }
+}
