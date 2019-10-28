@@ -6,6 +6,11 @@ const querystring = require('querystring');
 
 const { cleanFrontendObj, cleanBackendObj, cleanFrontendJson, cleanBackendJson } = require('./lib/clean');
 const port = 8125;
+const baseDir = path.resolve(__dirname, './dumps');
+
+if (!fs.existsSync(baseDir)){
+  fs.mkdirSync(baseDir);
+}
 
 http.createServer(function (req, res) {
   console.log(`${req.method} ${req.url}`);
@@ -24,12 +29,10 @@ http.createServer(function (req, res) {
         const backend = cleanBackendObj(decircularize(req));
 
         const frontendJson = cleanFrontendJson(JSON.stringify(frontend, null, 2))
-        console.log('FRONTEND JSON: ', frontendJson);
-
         const backendJson = cleanBackendJson(JSON.stringify(backend, null, 2))
 
-        fs.writeFileSync(`./dumps/frontend-${filename}.json`, frontendJson);
-        fs.writeFileSync(`./dumps/backend-${filename}.json`, backendJson);
+        fs.writeFileSync(`${baseDir}/frontend-${filename}.json`, frontendJson);
+        fs.writeFileSync(`${baseDir}/backend-${filename}.json`, backendJson);
       }
       res.statusCode = 201;
       res.setHeader('Content-type', 'application/json' );

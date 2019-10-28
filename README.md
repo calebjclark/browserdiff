@@ -1,3 +1,17 @@
+Launch backend server:
+```
+npm start
+```
+
+Then load page (i.e., in Chrome browser):
+```
+http://localhost:8125/?noautomation
+```
+
+Output of frontend and backend surface will be saved to ./dumps/ directory/.  
+
+Or load with Chromium:
+```
 ./node_modules/puppeteer/.local-chromium/mac-706915/chrome-mac/Chromium.app/Contents/MacOS/Chromium \
 http://localhost:8125/?automation \
 --disable-background-networking
@@ -19,7 +33,10 @@ http://localhost:8125/?automation \
 --disable-extensions \
 --disable-default-apps \
 --enable-automation
+```
 
+Alternative:
+```
 ./node_modules/puppeteer/.local-chromium/mac-706915/chrome-mac/Chromium.app/Contents/MacOS/Chromium \
 http://localhost:8125/?noautomation \
 --disable-background-networking \
@@ -38,3 +55,4 @@ http://localhost:8125/?noautomation \
 --no-sandbox \
 --disable-setuid-sandbox \
 --disk-cache-size=0 \
+```
